@@ -6,7 +6,7 @@ from langchain_openai import ChatOpenAI
 
 from langgraph.prebuilt import create_react_agent
 
-from stripe_agent_toolkit.langchain.toolkit import StripeAgentToolkit
+from appointy_agent_toolkit.toolkit import AppointyAgentToolkit
 
 load_dotenv()
 
@@ -14,33 +14,29 @@ llm = ChatOpenAI(
     model="gpt-4o",
 )
 
-stripe_agent_toolkit = StripeAgentToolkit(
-    secret_key=os.getenv("STRIPE_SECRET_KEY"),
+appointy_agent_toolkit = AppointyAgentToolkit(
+    api_key=os.getenv("APPOINTY_API_KEY"),
     configuration={
         "actions": {
-            "payment_links": {
+            "appointments": {
                 "create": True,
-            },
-            "products": {
-                "create": True,
-            },
-            "prices": {
-                "create": True,
+                "update": True,
+                "read": True,
             },
         }
     },
 )
 
 tools = []
-tools.extend(stripe_agent_toolkit.get_tools())
+tools.extend(appointy_agent_toolkit.get_tools())
 
 langgraph_agent_executor = create_react_agent(llm, tools)
 
 input_state = {
     "messages": """
-        Create a payment link for a new product called 'test' with a price
-        of $100. Come up with a funny description about buy bots,
-        maybe a haiku.
+        Create an appointment for a new customer called 'test' with a start time
+        of '2023-10-01T10:00:00Z' and end time of '2023-10-01T11:00:00Z'.
+        The description should be a haiku about scheduling appointments.
     """,
 }
 
