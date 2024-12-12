@@ -77,3 +77,85 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+# Appointy Agent Toolkit - Python
+
+The Appointy Agent Toolkit library enables popular agent frameworks including LangChain and CrewAI to integrate with Appointy APIs through function calling. The
+library is not exhaustive of the entire Appointy API. It is built directly on top
+of the [Appointy API Documentation][appointy-api-docs].
+
+## Installation
+
+You don't need this source code unless you want to modify the package. If you just
+want to use the package, just run:
+
+```sh
+pip install appointy-agent-toolkit
+```
+
+### Requirements
+
+- Python 3.11+
+
+## Usage
+
+The library needs to be configured with your account's API key which is
+available in your [Appointy Dashboard][api-keys].
+
+```python
+from appointy_agent_toolkit.toolkit import AppointyAgentToolkit
+
+appointy_agent_toolkit = AppointyAgentToolkit(
+    api_key="your_api_key",
+    configuration={
+        "actions": {
+            "appointments": {
+                "create": True,
+                "update": True,
+                "read": True,
+            },
+        }
+    },
+)
+```
+
+The toolkit works with LangChain and CrewAI and can be passed as a list of tools. For example:
+
+```python
+from crewai import Agent
+
+appointy_agent = Agent(
+    role="Appointy Agent",
+    goal="Integrate with Appointy",
+    backstory="You are an expert at integrating with Appointy",
+    tools=[*appointy_agent_toolkit.get_tools()]
+)
+```
+
+Examples for LangChain and CrewAI are included in `/examples`.
+
+[appointy-api-docs]: https://docs.appointy.com
+[api-keys]: https://dashboard.appointy.com/account/apikeys
+
+#### Context
+
+In some cases you will want to provide values that serve as defaults when making requests. Currently, the `account` context value enables you to make API calls for your [connected accounts](https://docs.appointy.com/connect/authentication).
+
+```python
+appointy_agent_toolkit = AppointyAgentToolkit(
+    api_key="your_api_key",
+    configuration={
+        "context": {
+            "account": "acct_123"
+        }
+    }
+)
+```
+
+## Development
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
